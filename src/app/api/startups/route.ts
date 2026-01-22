@@ -82,8 +82,9 @@ export async function GET(request: NextRequest) {
         // Apply filters (on cached or fresh data)
         let filtered = startups
 
-        // Apply new-only filter
-        if (newOnly && source !== 'yc_all') {
+        // Apply new-only filter only for sources with batch info
+        // YC OSS often lacks batch data, so skip filtering for it
+        if (newOnly && source !== 'yc_all' && source !== 'yc_oss') {
             filtered = filterNewCompanies(filtered)
         }
 

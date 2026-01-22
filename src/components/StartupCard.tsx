@@ -2,7 +2,7 @@
 
 'use client'
 
-import { Star, GitBranch, ExternalLink } from 'lucide-react'
+import { Star, GitBranch, ExternalLink, Globe } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Startup } from '@/lib/types'
 
@@ -11,8 +11,21 @@ interface Props {
 }
 
 export function StartupCard({ startup }: Props) {
+    // Determine the primary link (GitHub or website)
+    const primaryLink = startup.github_url || startup.website || null
+    const isGitHub = !!startup.github_url
+
+    const handleCardClick = () => {
+        if (primaryLink) {
+            window.open(primaryLink, '_blank', 'noopener,noreferrer')
+        }
+    }
+
     return (
-        <div className="card-glow bg-slate-900/50 rounded-xl border border-slate-800/50 p-5 flex flex-col h-full">
+        <div
+            className={`card-glow bg-slate-900/50 rounded-xl border border-slate-800/50 p-5 flex flex-col h-full transition-all ${primaryLink ? 'cursor-pointer hover:border-emerald-500/30' : ''}`}
+            onClick={handleCardClick}
+        >
             {/* Header: Company Name + YC Batch */}
             <div className="flex items-start justify-between gap-3 mb-3">
                 <h3 className="font-semibold text-lg text-white truncate flex-1">
@@ -62,19 +75,33 @@ export function StartupCard({ startup }: Props) {
                     )}
                 </div>
 
-                {/* Contribute Button */}
-                {startup.github_url && (
-                    <a
-                        href={startup.github_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30 transition-all"
-                    >
-                        <GitBranch className="w-4 h-4" />
-                        Contribute
-                    </a>
-                )}
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    {startup.github_url && (
+                        <a
+                            href={startup.github_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30 transition-all"
+                        >
+                            <GitBranch className="w-4 h-4" />
+                            Contribute
+                        </a>
+                    )}
+                    {!startup.github_url && startup.website && (
+                        <a
+                            href={startup.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-blue-500/10 hover:text-blue-400 hover:border-blue-500/30 transition-all"
+                        >
+                            <Globe className="w-4 h-4" />
+                            Visit
+                        </a>
+                    )}
+                </div>
             </div>
         </div>
     )
 }
+
