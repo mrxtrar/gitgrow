@@ -15,6 +15,11 @@ export async function fetchAllYCCompanies(minYear: number = 2020): Promise<Start
         const startups: Startup[] = []
 
         for (const company of companies) {
+            // Skip companies without GitHub repos
+            if (!company.github) {
+                continue
+            }
+
             // Skip inactive companies
             if (company.status !== 'Active' && company.status !== 'Public') {
                 continue
