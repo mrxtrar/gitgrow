@@ -2,29 +2,12 @@
 
 'use client'
 
-import { Star, GitBranch, ExternalLink, Globe, Clock } from 'lucide-react'
+import { Star, GitBranch, Globe } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Startup } from '@/lib/types'
 
 interface Props {
     startup: Startup
-}
-
-// Format relative time
-function formatRelativeTime(dateString: string): string {
-    if (!dateString) return ''
-
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-    if (diffDays === 0) return 'today'
-    if (diffDays === 1) return '1 day ago'
-    if (diffDays < 7) return `${diffDays} days ago`
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
-    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`
-    return `${Math.floor(diffDays / 365)} years ago`
 }
 
 export function StartupCard({ startup }: Props) {
@@ -36,8 +19,6 @@ export function StartupCard({ startup }: Props) {
             window.open(primaryLink, '_blank', 'noopener,noreferrer')
         }
     }
-
-    const lastActivityText = formatRelativeTime(startup.last_activity || '')
 
     return (
         <div
@@ -91,14 +72,6 @@ export function StartupCard({ startup }: Props) {
                             <span className="text-sm">{startup.languages[0]}</span>
                         </div>
                     )}
-
-                    {/* Last Activity */}
-                    {lastActivityText && (
-                        <div className="flex items-center gap-1.5 text-slate-500">
-                            <Clock className="w-3.5 h-3.5" />
-                            <span className="text-xs">{lastActivityText}</span>
-                        </div>
-                    )}
                 </div>
 
                 {/* Action Buttons */}
@@ -130,4 +103,3 @@ export function StartupCard({ startup }: Props) {
         </div>
     )
 }
-
