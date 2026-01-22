@@ -2,19 +2,27 @@
 
 import { Startup } from '@/lib/types'
 
-// Use the JSON API instead of parsing markdown (more reliable)
-const YC_OSS_API = 'https://yc-oss.github.io/api/companies/open-source.json'
+// Use the all.json API and filter for companies with GitHub
+const YC_ALL_API = 'https://yc-oss.github.io/api/companies/all.json'
 
 export async function fetchYCOSSCompanies(): Promise<Startup[]> {
     try {
-        const response = await fetch(YC_OSS_API)
-        if (!response.ok) throw new Error('Failed to fetch YC OSS list')
+        const response = await fetch(YC_ALL_API, {
+            headers: {
+                'Accept': 'application/json',
+            },
+        })
+        if (!response.ok) {
+            console.error(`[YC OSS] API returned ${response.status}`)
+            return []
+        }
 
         const companies: any[] = await response.json()
-        console.log(`[YC OSS] Fetched ${companies.length} companies from API`)
+        console.log(`[YC OSS] Fetched ${companies.length} total companies`)
 
+        // Filter for active companies with GitHub repos
         const startups: Startup[] = companies
-            .filter(c => c.github) // Only include those with GitHub
+            .filter(c => c.github && (c.status === 'Active' || c.status === 'Public'))
             .map(company => ({
                 id: `yc_oss:${company.slug || company.name?.toLowerCase().replace(/\s+/g, '-')}`,
                 name: company.name || '',
@@ -29,50 +37,10 @@ export async function fetchYCOSSCompanies(): Promise<Startup[]> {
                 source: 'yc_oss',
             }))
 
-        console.log(`[YC OSS] Parsed ${startups.length} companies with GitHub`)
+        console.log(`[YC OSS] Found ${startups.length} companies with GitHub repos`)
         return startups
     } catch (error) {
         console.error('YC OSS fetch error:', error)
-        // Fallback to the readme parsing method
-        return fetchFromReadme()
-    }
-}
-
-// Fallback method using README parsing
-async function fetchFromReadme(): Promise<Startup[]> {
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/yc-oss/open-source-companies/main/README.md')
-        if (!response.ok) return []
-
-        const markdown = await response.text()
-        const startups: Startup[] = []
-
-        // Parse table rows: | Company | Description | GitHub |
-        const tableRegex = /\|\s*\[([^\]]+)\]\(([^)]+)\)\s*\|\s*([^|]*)\s*\|\s*\[GitHub\]\(([^)]+)\)/g
-
-        let match
-        while ((match = tableRegex.exec(markdown)) !== null) {
-            const [, name, website, description, github_url] = match
-
-            startups.push({
-                id: `yc_oss:${name.toLowerCase().replace(/\s+/g, '-')}`,
-                name: name.trim(),
-                slug: name.toLowerCase().replace(/\s+/g, '-'),
-                description: description.trim(),
-                website: website.trim(),
-                github_url: github_url.trim(),
-                batch: '', // Can't reliably extract from markdown
-                tags: ['open-source'],
-                stars: 0,
-                languages: [],
-                source: 'yc_oss',
-            })
-        }
-
-        console.log(`[YC OSS Fallback] Parsed ${startups.length} companies`)
-        return startups
-    } catch (error) {
-        console.error('YC OSS fallback error:', error)
         return []
     }
 }
@@ -99,3 +67,4 @@ export function filterNewCompanies(startups: Startup[], minYear: number = 2025):
         return false
     })
 }
+
