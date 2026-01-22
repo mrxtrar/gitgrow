@@ -39,11 +39,12 @@ export async function fetchHackerNewsProjects(limit: number = 30): Promise<Start
                     description: item.title,
                     website: item.url,
                     github_url: github_url,
-                    batch: new Date(item.time * 1000).toISOString().split('T')[0],
+                    batch: '', // No YC batch for HN projects
                     tags: ['hackernews', 'show-hn'],
                     stars: item.score || 0,
                     languages: [],
                     source: 'hackernews',
+                    last_activity: new Date(item.time * 1000).toISOString(),
                 })
             } catch (e) {
                 // Skip failed items

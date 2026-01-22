@@ -16,6 +16,7 @@ export interface Startup {
     good_first_issues?: number
     open_issues?: number
     language?: string
+    last_activity?: string // ISO date string of last repo activity
 }
 
 export interface Filters {

@@ -48,11 +48,12 @@ export async function fetchGitHubTrending(
             description: repo.description || '',
             website: repo.homepage || repo.html_url,
             github_url: repo.html_url,
-            batch: repo.created_at?.split('T')[0] || '',
+            batch: '', // No YC batch for GitHub repos
             tags: repo.topics || [],
             stars: repo.stargazers_count || 0,
             languages: [repo.language].filter(Boolean),
             source: 'github_trending',
+            last_activity: repo.pushed_at || repo.updated_at || '',
         }))
 
         console.log(`[GitHub Trending] Found ${startups.length} repos`)

@@ -2,7 +2,7 @@
 
 'use client'
 
-import { Star, GitBranch, ExternalLink, Globe } from 'lucide-react'
+import { Star, GitBranch, ExternalLink, Globe, Clock } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Startup } from '@/lib/types'
 
@@ -10,16 +10,34 @@ interface Props {
     startup: Startup
 }
 
+// Format relative time
+function formatRelativeTime(dateString: string): string {
+    if (!dateString) return ''
+
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    if (diffDays === 0) return 'today'
+    if (diffDays === 1) return '1 day ago'
+    if (diffDays < 7) return `${diffDays} days ago`
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`
+    return `${Math.floor(diffDays / 365)} years ago`
+}
+
 export function StartupCard({ startup }: Props) {
     // Determine the primary link (GitHub or website)
     const primaryLink = startup.github_url || startup.website || null
-    const isGitHub = !!startup.github_url
 
     const handleCardClick = () => {
         if (primaryLink) {
             window.open(primaryLink, '_blank', 'noopener,noreferrer')
         }
     }
+
+    const lastActivityText = formatRelativeTime(startup.last_activity || '')
 
     return (
         <div
@@ -71,6 +89,14 @@ export function StartupCard({ startup }: Props) {
                         <div className="flex items-center gap-1.5 text-slate-400">
                             <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                             <span className="text-sm">{startup.languages[0]}</span>
+                        </div>
+                    )}
+
+                    {/* Last Activity */}
+                    {lastActivityText && (
+                        <div className="flex items-center gap-1.5 text-slate-500">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span className="text-xs">{lastActivityText}</span>
                         </div>
                     )}
                 </div>
