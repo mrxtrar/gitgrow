@@ -1,0 +1,8 @@
+name = "gitgrow"
+compatibility_date = "2024-01-01"
+
+# Uncomment and add your database ID after running: wrangler d1 create gitgrow-db
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "gitgrow-db"
+# database_id = "YOUR_DATABASE_ID_HERE"
