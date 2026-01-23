@@ -1,9 +1,8 @@
 // API Route: GET /api/startups
-// Fetches startups from cache or external APIs with automatic caching
+// Fetches startups from verified sources with automatic caching
 
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchYCOSSCompanies, filterNewCompanies } from '@/lib/sources/yc-oss'
-import { fetchAllYCCompanies } from '@/lib/sources/yc-all'
+import { fetchVerifiedYCRepos } from '@/lib/sources/yc-verified'
 import { fetchHackerNewsProjects } from '@/lib/sources/hackernews'
 import { fetchGitHubTrending } from '@/lib/sources/trending'
 import { getCachedData, setCachedData, formatLastUpdated } from '@/lib/cache'
@@ -11,8 +10,8 @@ import { Startup } from '@/lib/types'
 
 export const runtime = 'edge'
 
-// Cache TTL in seconds (10 minutes)
-const CACHE_TTL = 10 * 60
+// Cache TTL in seconds (15 minutes for verified data)
+const CACHE_TTL = 15 * 60
 
 const LANGUAGES = [
     'JavaScript', 'TypeScript', 'Python', 'Go', 'Rust',
@@ -22,7 +21,6 @@ const LANGUAGES = [
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const source = searchParams.get('source') || 'github_trending'
-    const newOnly = searchParams.get('newOnly') === 'true'
     const limit = parseInt(searchParams.get('limit') || '50', 10)
     const language = searchParams.get('language') || ''
 
@@ -45,26 +43,25 @@ export async function GET(request: NextRequest) {
             console.log(`[Cache MISS] ${cacheKey} - Fetching fresh data...`)
 
             switch (source) {
-                case 'yc_oss':
-                    startups = await fetchYCOSSCompanies()
-                    break
-                case 'yc_all':
-                    const minYear = newOnly ? 2025 : 2020
-                    startups = await fetchAllYCCompanies(minYear)
+                case 'yc_verified':
+                    // VERIFIED YC-funded companies with real GitHub repos
+                    startups = await fetchVerifiedYCRepos()
                     break
                 case 'hackernews':
-                    startups = await fetchHackerNewsProjects(100) // Fetch more for cache
+                    // Community projects from Hacker News (not verified funded)
+                    startups = await fetchHackerNewsProjects(100)
                     break
                 case 'github_trending':
+                    // Trending repos on GitHub
                     startups = await fetchGitHubTrending(language, 100)
                     break
                 case 'all':
-                    const [ycOss, hn, trending] = await Promise.all([
-                        fetchYCOSSCompanies(),
+                    const [ycVerified, hn, trending] = await Promise.all([
+                        fetchVerifiedYCRepos(),
                         fetchHackerNewsProjects(30),
                         fetchGitHubTrending(language, 50),
                     ])
-                    startups = [...ycOss, ...hn, ...trending]
+                    startups = [...ycVerified, ...hn, ...trending]
                     break
                 default:
                     startups = await fetchGitHubTrending('', 100)
@@ -82,14 +79,8 @@ export async function GET(request: NextRequest) {
         // Apply filters (on cached or fresh data)
         let filtered = startups
 
-        // Apply new-only filter only for sources with batch info
-        // YC OSS often lacks batch data, so skip filtering for it
-        if (newOnly && source !== 'yc_all' && source !== 'yc_oss') {
-            filtered = filterNewCompanies(filtered)
-        }
-
-        // Apply language filter (for sources that return all languages)
-        if (language && source !== 'github_trending') {
+        // Apply language filter
+        if (language) {
             filtered = filtered.filter(s => {
                 const langs = s.languages || []
                 return langs.some(l => l.toLowerCase() === language.toLowerCase())
@@ -104,7 +95,7 @@ export async function GET(request: NextRequest) {
             count: filtered.length,
             totalCached: startups.length,
             source,
-            filters: { newOnly, limit, language },
+            filters: { limit, language },
             lastUpdated,
             lastUpdatedFormatted: formatLastUpdated(lastUpdated),
             availableLanguages: LANGUAGES,
@@ -127,3 +118,4 @@ export async function GET(request: NextRequest) {
         )
     }
 }
+

@@ -55,10 +55,9 @@ export function FilterBar({ filters, searchQuery, onSearchChange, onFiltersChang
                         onChange={(e) => onFiltersChange({ ...filters, source: e.target.value })}
                         className="appearance-none bg-slate-900/50 border border-slate-800 rounded-lg pl-3 pr-8 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-emerald-500/50 cursor-pointer hover:border-slate-700 transition-colors"
                     >
-                        <option value="github_trending">📈 Trending</option>
-                        <option value="yc_oss">🏆 YC Open Source</option>
-                        <option value="yc_all">🚀 All YC</option>
-                        <option value="hackernews">📰 Hacker News</option>
+                        <option value="github_trending">📈 Trending Repos</option>
+                        <option value="yc_verified">✅ YC Funded (Verified)</option>
+                        <option value="hackernews">💬 Show HN (Community)</option>
                         <option value="all">🌐 All Sources</option>
                     </select>
                     <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
@@ -79,17 +78,6 @@ export function FilterBar({ filters, searchQuery, onSearchChange, onFiltersChang
                     </select>
                     <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                 </div>
-
-                {/* New Only Toggle */}
-                <button
-                    onClick={() => onFiltersChange({ ...filters, newOnly: !filters.newOnly })}
-                    className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition-all ${filters.newOnly
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                            : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-                        }`}
-                >
-                    2025+
-                </button>
 
                 {/* Limit */}
                 <div className="relative">

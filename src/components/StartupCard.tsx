@@ -2,7 +2,7 @@
 
 'use client'
 
-import { Star, GitBranch, Globe } from 'lucide-react'
+import { Star, GitBranch, Globe, BadgeCheck, MessageCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Startup } from '@/lib/types'
 
@@ -13,6 +13,8 @@ interface Props {
 export function StartupCard({ startup }: Props) {
     // Determine the primary link (GitHub or website)
     const primaryLink = startup.github_url || startup.website || null
+    const isVerifiedYC = startup.source === 'yc_verified'
+    const isCommunity = startup.source === 'hackernews'
 
     const handleCardClick = () => {
         if (primaryLink) {
@@ -25,14 +27,28 @@ export function StartupCard({ startup }: Props) {
             className={`card-glow bg-slate-900/50 rounded-xl border border-slate-800/50 p-5 flex flex-col h-full transition-all ${primaryLink ? 'cursor-pointer hover:border-emerald-500/30' : ''}`}
             onClick={handleCardClick}
         >
-            {/* Header: Company Name + YC Batch */}
-            <div className="flex items-start justify-between gap-3 mb-3">
+            {/* Header: Company Name + Badges */}
+            <div className="flex items-start justify-between gap-2 mb-3">
                 <h3 className="font-semibold text-lg text-white truncate flex-1">
                     {startup.name}
                 </h3>
-                {startup.batch && (
-                    <Badge variant="yc">{startup.batch}</Badge>
-                )}
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                    {isVerifiedYC && (
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+                            <BadgeCheck className="w-3 h-3" />
+                            YC Funded
+                        </span>
+                    )}
+                    {isCommunity && (
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-medium">
+                            <MessageCircle className="w-3 h-3" />
+                            Community
+                        </span>
+                    )}
+                    {startup.batch && (
+                        <Badge variant="yc">{startup.batch}</Badge>
+                    )}
+                </div>
             </div>
 
             {/* Body: Description */}
