@@ -75,7 +75,7 @@ export default function Home() {
                         {' '}contribution
                     </h1>
                     <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-                        Discover YC startups with active GitHub repos.
+                        Discover trending GitHub repos.
                         Contribute to growing projects and get noticed.
                     </p>
                 </motion.section>
@@ -157,10 +157,10 @@ export default function Home() {
                 {/* Footer */}
                 <footer className="py-8 border-t border-slate-800/50 text-center">
                     <p className="text-slate-500 text-sm">
-                        GitGrow Beta · Data from YC, GitHub, and Hacker News
+                        GitGrow Beta · Powered by GitHub
                     </p>
                     <p className="text-slate-600 text-xs mt-1">
-                        Data refreshes automatically every 10 minutes
+                        Data refreshes automatically every 15 minutes
                     </p>
                 </footer>
             </main>

@@ -48,7 +48,7 @@ export function FilterBar({ filters, searchQuery, onSearchChange, onFiltersChang
                     )}
                 </div>
 
-                {/* Source Filter */}
+                {/* Source Filter - GitHub Trending Only */}
                 <div className="relative">
                     <select
                         value={filters.source}
@@ -56,9 +56,6 @@ export function FilterBar({ filters, searchQuery, onSearchChange, onFiltersChang
                         className="appearance-none bg-slate-900/50 border border-slate-800 rounded-lg pl-3 pr-8 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-emerald-500/50 cursor-pointer hover:border-slate-700 transition-colors"
                     >
                         <option value="github_trending">📈 Trending Repos</option>
-                        <option value="yc_verified">✅ YC Funded (Verified)</option>
-                        <option value="hackernews">💬 Show HN (Community)</option>
-                        <option value="all">🌐 All Sources</option>
                     </select>
                     <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                 </div>
