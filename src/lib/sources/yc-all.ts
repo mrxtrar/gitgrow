@@ -15,11 +15,6 @@ export async function fetchAllYCCompanies(minYear: number = 2020): Promise<Start
         const startups: Startup[] = []
 
         for (const company of companies) {
-            // Skip companies without GitHub repos
-            if (!company.github) {
-                continue
-            }
-
             // Skip inactive companies
             if (company.status !== 'Active' && company.status !== 'Public') {
                 continue
@@ -29,13 +24,16 @@ export async function fetchAllYCCompanies(minYear: number = 2020): Promise<Start
             const year = extractYear(company.batch)
             if (year < minYear) continue
 
+            // Limit to 500 for performance
+            if (startups.length >= 500) break
+
             startups.push({
                 id: `yc:${company.slug || company.name?.toLowerCase().replace(/\s+/g, '-')}`,
                 name: company.name || '',
                 slug: company.slug || '',
                 description: company.one_liner || company.long_description || '',
-                website: company.website || '',
-                github_url: company.github || null,
+                website: company.website || company.url || '',
+                github_url: null, // YC API doesn't provide GitHub links
                 batch: company.batch || '',
                 tags: company.tags || [],
                 stars: 0,

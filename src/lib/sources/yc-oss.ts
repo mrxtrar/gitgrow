@@ -1,8 +1,8 @@
-// YC OSS Source - Fetches YC open source companies with verified GitHub repos
+// YC Source - Fetches active YC companies
 
 import { Startup } from '@/lib/types'
 
-// Use the all.json API and filter for companies with GitHub
+// YC Companies API
 const YC_ALL_API = 'https://yc-oss.github.io/api/companies/all.json'
 
 export async function fetchYCOSSCompanies(): Promise<Startup[]> {
@@ -13,34 +13,35 @@ export async function fetchYCOSSCompanies(): Promise<Startup[]> {
             },
         })
         if (!response.ok) {
-            console.error(`[YC OSS] API returned ${response.status}`)
+            console.error(`[YC] API returned ${response.status}`)
             return []
         }
 
         const companies: any[] = await response.json()
-        console.log(`[YC OSS] Fetched ${companies.length} total companies`)
+        console.log(`[YC] Fetched ${companies.length} total companies`)
 
-        // Filter for active companies with GitHub repos
+        // Filter for active companies only
         const startups: Startup[] = companies
-            .filter(c => c.github && (c.status === 'Active' || c.status === 'Public'))
+            .filter(c => c.status === 'Active' || c.status === 'Public')
+            .slice(0, 500) // Limit to 500 for performance
             .map(company => ({
-                id: `yc_oss:${company.slug || company.name?.toLowerCase().replace(/\s+/g, '-')}`,
+                id: `yc:${company.slug || company.name?.toLowerCase().replace(/\s+/g, '-')}`,
                 name: company.name || '',
                 slug: company.slug || '',
                 description: company.one_liner || company.long_description || '',
-                website: company.website || '',
-                github_url: company.github || null,
+                website: company.website || company.url || '',
+                github_url: null, // YC API doesn't provide GitHub links
                 batch: company.batch || '',
-                tags: [...(company.tags || []), 'open-source'],
+                tags: company.tags || [],
                 stars: 0,
                 languages: [],
                 source: 'yc_oss',
             }))
 
-        console.log(`[YC OSS] Found ${startups.length} companies with GitHub repos`)
+        console.log(`[YC] Found ${startups.length} active companies`)
         return startups
     } catch (error) {
-        console.error('YC OSS fetch error:', error)
+        console.error('YC fetch error:', error)
         return []
     }
 }
