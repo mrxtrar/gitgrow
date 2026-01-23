@@ -1,72 +1,29 @@
-# GitGrow - Find Startups, Grow Your GitHub
+# GitGrow 🌱
 
-> Discover new startups with open source repos. Contribute and get noticed by founders.
+Discover trending GitHub repositories and find your next open source contribution.
 
-## 🚀 Quick Start
+**🔗 Live: [gitgrow.pages.dev](https://gitgrow.pages.dev)**
 
-```bash
-# Install dependencies
-npm install
+---
 
-# Run locally
-npm run dev
+## What is GitGrow?
 
-# Deploy to Cloudflare
-npm run deploy
-```
+GitGrow helps developers discover active open source projects to contribute to. Browse trending repositories, filter by programming language, and find projects that match your skills.
 
-## 🌐 Live Demo
+## Features
 
-After deploying: **https://gitgrow.pages.dev**
+- 📈 **Trending Repos** - See what's popular on GitHub right now
+- 🔍 **Search & Filter** - Find projects by name or language
+- ⭐ **Star Count** - Quickly see project popularity
+- 🚀 **One-Click Contribute** - Jump straight to the repo
 
-## ✨ Features
+## Tech Stack
 
-- 🔍 **Multiple Sources**: YC companies, Hacker News, GitHub Trending
-- 🆕 **New Company Filter**: Focus on 2025+ startups
-- 📊 **Real-time Dashboard**: Beautiful dark mode UI
-- ⚡ **Edge Deployment**: Runs on Cloudflare's global network
-- 💰 **Free**: $0 hosting cost
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- Cloudflare Pages
 
-## 📁 Project Structure
+---
 
-```
-gitgrow/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx           # Dashboard
-│   │   ├── layout.tsx         # Root layout
-│   │   └── api/startups/      # API route
-│   ├── components/
-│   │   ├── StartupCard.tsx
-│   │   ├── FilterBar.tsx
-│   │   └── StatsBar.tsx
-│   └── lib/
-│       ├── types.ts           # TypeScript types
-│       └── sources/           # Data sources
-├── wrangler.toml              # Cloudflare config
-└── package.json
-```
-
-## 🔧 Configuration
-
-1. Create D1 database:
-   ```bash
-   wrangler d1 create gitgrow-db
-   ```
-
-2. Add to `wrangler.toml`:
-   ```toml
-   [[d1_databases]]
-   binding = "DB"
-   database_name = "gitgrow-db"
-   database_id = "YOUR_ID"
-   ```
-
-3. Add secrets:
-   ```bash
-   wrangler secret put GITHUB_TOKEN
-   ```
-
-## 📝 License
-
-MIT
+Built with ❤️ for the open source community
